@@ -1,16 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import useAuthUser from "../hooks/useAuthUser";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { completeOnboarding } from "../lib/api";
-import {LoaderIcon, MapPinIcon, ShipWheelIcon, ShuffleIcon } from "lucide-react";
+import { LoaderIcon, MapPinIcon, ShipWheelIcon, ShuffleIcon } from "lucide-react";
 import { LANGUAGES } from "../constants";
-
-
 
 const OnboardingPage = () => {
   const { authUser } = useAuthUser();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [formState, setFormState] = useState({
     fullName: authUser?.fullName || "",
@@ -26,20 +26,19 @@ const OnboardingPage = () => {
     onSuccess: () => {
       toast.success("Profile onboarded successfully");
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      navigate("/"); // Redirect to homepage after success
     },
-
     onError: (error) => {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Something went wrong");
     },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     onboardingMutation(formState);
   };
 
-   const handleRandomAvatar = () => {
+  const handleRandomAvatar = () => {
     const idx = Math.floor(Math.random() * 100) + 1; // 1-100 included
     const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
 
@@ -57,9 +56,9 @@ const OnboardingPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
 
-             {/* PROFILE PIC CONTAINER */}
+            {/* PROFILE PIC CONTAINER */}
             <div className="flex flex-col items-center justify-center space-y-4">
-                {/* IMAGE PREVIEW */}
+              {/* IMAGE PREVIEW */}
               <div className="size-32 rounded-full bg-base-300 overflow-hidden">
                 {formState.profilePic ? (
                   <img
@@ -69,20 +68,20 @@ const OnboardingPage = () => {
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full">
-                    <CameraIcon className="size-12 text-base-content opacity-40" />
+                    {/* You can add a placeholder icon here */}
+                    <div className="text-base-content opacity-40 text-6xl">📷</div>
                   </div>
                 )}
               </div>
 
-               {/* Generate Random Avatar BTN */}
+              {/* Generate Random Avatar BTN */}
               <div className="flex items-center gap-2">
                 <button type="button" 
-                onClick={handleRandomAvatar} className="btn btn-accent">
+                  onClick={handleRandomAvatar} className="btn btn-accent">
                   <ShuffleIcon className="size-4 mr-2" />
                   Generate Random Avatar
                 </button>
               </div>
-
             </div>
 
             {/* FULL NAME */}
@@ -100,8 +99,7 @@ const OnboardingPage = () => {
               />
             </div>
 
-
-              {/* BIO */}
+            {/* BIO */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Bio</span>
@@ -115,9 +113,7 @@ const OnboardingPage = () => {
               />
             </div>
 
-
-
-                       {/* LANGUAGES */}
+            {/* LANGUAGES */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* NATIVE LANGUAGE */}
               <div className="form-control">
@@ -160,8 +156,7 @@ const OnboardingPage = () => {
               </div>
             </div>
 
-
-             {/* LOCATION */}
+            {/* LOCATION */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Location</span>
@@ -179,10 +174,7 @@ const OnboardingPage = () => {
               </div>
             </div>
 
-
-
-             {/* SUBMIT BUTTON */}
-
+            {/* SUBMIT BUTTON */}
             <button className="btn btn-primary w-full" disabled={isPending} type="submit">
               {!isPending ? (
                 <>
@@ -196,7 +188,6 @@ const OnboardingPage = () => {
                 </>
               )}
             </button>
-
 
           </form>
         </div>

@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
 import { BellIcon, LogOutIcon, ShipWheelIcon } from "lucide-react";
 import ThemeSelector from "./ThemeSelector";
@@ -14,6 +14,12 @@ const Navbar = () => {
   //   mutationFn: logout,
   //   onSuccess: () => queryClient.invalidateQueries({ queryKey: ["authUser"] }),
   // });
+    const navigate = useNavigate();
+   const handleProfileClick = () => {
+    console.log("clicked");
+    
+    navigate("/onboarding");
+  };
 
   const { logoutMutation } = useLogout();
 
@@ -45,10 +51,11 @@ const Navbar = () => {
           <ThemeSelector />
 
           <div className="avatar">
-            <div className="w-9 rounded-full">
-              <img src={authUser?.profilePic} alt="User Avatar" rel="noreferrer" />
-            </div>
-          </div>
+      <div className="w-9 rounded-full cursor-pointer" onClick={handleProfileClick}>
+        <img src={authUser?.profilePic} alt="User Avatar" rel="noreferrer" />
+      </div>
+    </div>
+
 
           {/* Logout button */}
           <button className="btn btn-ghost btn-circle" onClick={logoutMutation}>
